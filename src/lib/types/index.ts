@@ -3,3 +3,8 @@ export type StarterProps = {
   description: string;
   link: string;
 };
+
+export enum UserType {
+  INDIVIDUAL = "INDIVIDUAL",
+  LEGAL = "LEGAL",
+}
