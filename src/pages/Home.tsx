@@ -10,7 +10,7 @@ export function Home() {
   const { data, isLoading, refetch, isSuccess } = useReadContract({
     abi: {} as any,
     address: ERC20_ADDRESS,
-    functionName: "balanceOf",
+    functionName: "checkUserType",
     args: [ERC20_ADDRESS],
     query: {
       enabled: false,
