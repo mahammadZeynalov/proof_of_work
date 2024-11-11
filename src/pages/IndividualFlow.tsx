@@ -1,20 +1,22 @@
 import Button from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { rainbowkitConfig } from "@/config/rainbowkitConfig";
-import { ABI, ERC20_ADDRESS } from "@/lib/constants";
-import { useReadContract, useWriteContract } from "wagmi";
+import { ABI, CONTRACT_ADDRESS } from "@/lib/constants";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { waitForTransactionReceipt } from "wagmi/actions";
 
 export function IndividualFlow() {
+  const { address } = useAccount();
+
   const {
     data: isAlreadyAgreed,
     isLoading: isAlreadyAgreedLoading,
     refetch,
   } = useReadContract({
     abi: ABI,
-    address: ERC20_ADDRESS,
-    functionName: "isAlreadyAgreed",
-    args: [ERC20_ADDRESS],
+    address: CONTRACT_ADDRESS,
+    functionName: "checkRegistration",
+    args: [address as `0x${string}`],
     query: {
       enabled: false,
     },
@@ -26,9 +28,9 @@ export function IndividualFlow() {
     try {
       const txHash = await writeContractAsync({
         abi: ABI,
-        address: ERC20_ADDRESS,
-        functionName: "submitToShareWorkExperience",
-        args: [ERC20_ADDRESS],
+        address: CONTRACT_ADDRESS,
+        functionName: "register",
+        args: [],
       });
 
       await waitForTransactionReceipt(rainbowkitConfig, {
@@ -36,15 +38,15 @@ export function IndividualFlow() {
         hash: txHash,
       });
       toast({
-        title: "Successfully minted tRSK tokens",
-        description: "Refresh the page to see changes",
+        title: "Successfully registered",
+        description: "",
       });
 
       refetch();
     } catch (e) {
       toast({
         title: "Error",
-        description: "Failed to mint tRSK tokens",
+        description: "Failed to register",
         variant: "destructive",
       });
       console.error(e);

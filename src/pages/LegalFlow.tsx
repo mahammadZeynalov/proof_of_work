@@ -13,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useForm, Controller } from "react-hook-form";
 import {
   Select,
   SelectContent,
@@ -27,58 +26,24 @@ import { toast } from "@/components/ui/use-toast";
 export function LegalFlow() {
   const [searchValue, setSearchValue] = useState("");
   const [nfts, setNfts] = useState<JobItem[]>([]);
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    getValues,
-  } = useForm<JobItem>();
+  const { writeContractAsync, isPending: isSubmitPending } = useWriteContract();
   const {
     data: nftsIds,
     isLoading: isNftsIdsLoading,
     refetch: refetchNftsIds,
   } = useReadContract({
     abi: ABI,
-    address: ERC20_ADDRESS,
+    address: CONTRACT_ADDRESS,
     functionName: "balanceOf",
     args: [searchValue],
     query: {
       enabled: false,
     },
   });
-  const { writeContractAsync, isPending: isSubmitPending } = useWriteContract();
-
-  const mintJob = async () => {
-    const formData = getValues();
-    try {
-      const txHash = await writeContractAsync({
-        abi: ABI,
-        address: ERC20_ADDRESS,
-        functionName: "submitToShareWorkExperience",
-        args: [formData.careerEvent, formData.text],
-      });
-
-      await waitForTransactionReceipt(rainbowkitConfig, {
-        confirmations: 1,
-        hash: txHash,
-      });
-      toast({
-        title: "Successfully minted tRSK tokens",
-        description: "Refresh the page to see changes",
-      });
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: "Failed to mint tRSK tokens",
-        variant: "destructive",
-      });
-      console.error(e);
-    }
-  };
 
   useEffect(() => {
+    if (!(nftsIds as string[])?.length) return;
     const tokenIds = nftsIds as string[];
-
     const fetchJobs = async () => {
       const result: JobItem[] = [];
       for (const tokenId of tokenIds) {
@@ -95,9 +60,41 @@ export function LegalFlow() {
     fetchJobs();
   }, [nftsIds]);
 
+  const mintJob = async () => {
+    try {
+      const txHash = await writeContractAsync({
+        abi: ABI,
+        address: ERC20_ADDRESS,
+        functionName: "mintNFT",
+        args: [searchValue, jobText, jobCareerEvent],
+      });
+
+      await waitForTransactionReceipt(rainbowkitConfig, {
+        confirmations: 1,
+        hash: txHash,
+      });
+      toast({
+        title: "Successfully added new job entry",
+        description: "Refresh the page to see changes",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: "Failed to add new job entry",
+        variant: "destructive",
+      });
+      console.error(e);
+    }
+  };
+
   const handleSearch = () => {
     refetchNftsIds();
   };
+
+  const [jobText, setJobText] = useState("");
+  const [jobCareerEvent, setJobCareerEvent] = useState<CareerEvent>(
+    CareerEvent.HIRED
+  );
 
   return (
     <main className="max-w-[1100px] mx-auto">
@@ -108,13 +105,12 @@ export function LegalFlow() {
         <div></div>
         <div className="mt-6">
           <Input
-            style={{ width: 800 }}
+            style={{ width: 500 }}
             value={searchValue}
             onChange={(event) => setSearchValue(event.target.value)}
           />
           <Button onClick={handleSearch} disabled={isNftsIdsLoading}>
-            With clicking this button you agree to provide your work experience
-            data to HRs
+            Search
           </Button>
         </div>
       </div>
@@ -138,50 +134,37 @@ export function LegalFlow() {
       </div>
       <div>Add career information:</div>
       <div>
-        <form onSubmit={handleSubmit(mintJob)}>
-          <div>
-            <label htmlFor="text">Job Event Description</label>
-            <Input
-              id="text"
-              type="text"
-              {...control.register("text", {
-                required: "Description is required",
-              })}
-            />
-            {errors.text && <span>{errors.text.message}</span>}
-          </div>
+        <div>
+          <label htmlFor="text">Job Event Description</label>
+          <Input
+            id="text"
+            type="text"
+            value={jobText}
+            onChange={(event) => setJobText(event.target.value)}
+          />
+        </div>
 
-          <div>
-            <label htmlFor="careerEvent">Career Event</label>
-            <Controller
-              name="careerEvent"
-              control={control}
-              render={({ field }) => (
-                <Select {...field}>
-                  <SelectTrigger className="w-[90%] mx-auto">
-                    <SelectValue placeholder="Select an event" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value={CareerEvent.HIRED}>Hired</SelectItem>
-                      <SelectItem value={CareerEvent.PROMOTED}>
-                        Promoted
-                      </SelectItem>
-                      <SelectItem value={CareerEvent.FIREWELL}>
-                        Farewell
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.careerEvent && <span>{errors.careerEvent.message}</span>}
-          </div>
+        <div>
+          <label htmlFor="careerEvent">Career Event</label>
+          <Select
+            onValueChange={(value: CareerEvent) => setJobCareerEvent(value)}
+          >
+            <SelectTrigger className="w-[90%] mx-auto">
+              <SelectValue placeholder="Select an event" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value={CareerEvent.HIRED}>Hired</SelectItem>
+                <SelectItem value={CareerEvent.PROMOTED}>Promoted</SelectItem>
+                <SelectItem value={CareerEvent.FIREWELL}>Farewell</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
-          <Button type="submit" disabled={isSubmitPending}>
-            Submit
-          </Button>
-        </form>
+        <Button type="button" disabled={isSubmitPending} onClick={mintJob}>
+          Submit
+        </Button>
       </div>
     </main>
   );
