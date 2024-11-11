@@ -1,7 +1,7 @@
 import Button from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { rainbowkitConfig } from "@/config/rainbowkitConfig";
-import { ERC20_ADDRESS } from "@/lib/constants";
+import { ABI, ERC20_ADDRESS } from "@/lib/constants";
 import { useReadContract, useWriteContract } from "wagmi";
 import { waitForTransactionReceipt } from "wagmi/actions";
 
@@ -11,7 +11,7 @@ export function IndividualFlow() {
     isLoading: isAlreadyAgreedLoading,
     refetch,
   } = useReadContract({
-    abi: {} as any,
+    abi: ABI,
     address: ERC20_ADDRESS,
     functionName: "isAlreadyAgreed",
     args: [ERC20_ADDRESS],
@@ -25,7 +25,7 @@ export function IndividualFlow() {
   const handleSubmit = async () => {
     try {
       const txHash = await writeContractAsync({
-        abi: {} as any,
+        abi: ABI,
         address: ERC20_ADDRESS,
         functionName: "submitToShareWorkExperience",
         args: [ERC20_ADDRESS],

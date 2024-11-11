@@ -1,4 +1,4 @@
-import { ERC20_ADDRESS } from "@/lib/constants";
+import { ABI, ERC20_ADDRESS } from "@/lib/constants";
 import { UserType } from "@/lib/types";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ export function Home() {
   const { address } = useAccount();
   const navigate = useNavigate();
   const { data, isLoading, refetch, isSuccess } = useReadContract({
-    abi: {} as any,
+    abi: ABI,
     address: ERC20_ADDRESS,
     functionName: "checkUserType",
     args: [ERC20_ADDRESS],
