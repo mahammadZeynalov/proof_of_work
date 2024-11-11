@@ -10,9 +10,9 @@ export enum UserType {
 }
 
 export enum CareerEvent {
-  HIRED,
-  PROMOTED,
-  FIREWELL,
+  HIRED = "HIRED",
+  PROMOTED = "PROMOTED",
+  FIREWELL = "FIREWELL",
 }
 
 export interface JobItem {

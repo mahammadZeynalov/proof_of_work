@@ -2,9 +2,9 @@ import Button from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ABI, CONTRACT_ADDRESS, ERC20_ADDRESS } from "@/lib/constants";
 import { useEffect, useState } from "react";
-import { useReadContract } from "wagmi";
-import { readContract } from "@wagmi/core";
-import { JobItem } from "@/lib/types";
+import { useReadContract, useWriteContract } from "wagmi";
+import { readContract, waitForTransactionReceipt } from "@wagmi/core";
+import { CareerEvent, JobItem } from "@/lib/types";
 import { rainbowkitConfig } from "@/config/rainbowkitConfig";
 import {
   Card,
@@ -13,10 +13,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useForm, Controller } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "@/components/ui/use-toast";
 
 export function LegalFlow() {
   const [searchValue, setSearchValue] = useState("");
   const [nfts, setNfts] = useState<JobItem[]>([]);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    getValues,
+  } = useForm<JobItem>();
   const {
     data: nftsIds,
     isLoading: isNftsIdsLoading,
@@ -30,6 +46,35 @@ export function LegalFlow() {
       enabled: false,
     },
   });
+  const { writeContractAsync, isPending: isSubmitPending } = useWriteContract();
+
+  const mintJob = async () => {
+    const formData = getValues();
+    try {
+      const txHash = await writeContractAsync({
+        abi: ABI,
+        address: ERC20_ADDRESS,
+        functionName: "submitToShareWorkExperience",
+        args: [formData.careerEvent, formData.text],
+      });
+
+      await waitForTransactionReceipt(rainbowkitConfig, {
+        confirmations: 1,
+        hash: txHash,
+      });
+      toast({
+        title: "Successfully minted tRSK tokens",
+        description: "Refresh the page to see changes",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: "Failed to mint tRSK tokens",
+        variant: "destructive",
+      });
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     const tokenIds = nftsIds as string[];
@@ -90,6 +135,53 @@ export function LegalFlow() {
             <CardContent className="space-y-4"></CardContent>
           </Card>
         ))}
+      </div>
+      <div>Add career information:</div>
+      <div>
+        <form onSubmit={handleSubmit(mintJob)}>
+          <div>
+            <label htmlFor="text">Job Event Description</label>
+            <Input
+              id="text"
+              type="text"
+              {...control.register("text", {
+                required: "Description is required",
+              })}
+            />
+            {errors.text && <span>{errors.text.message}</span>}
+          </div>
+
+          <div>
+            <label htmlFor="careerEvent">Career Event</label>
+            <Controller
+              name="careerEvent"
+              control={control}
+              render={({ field }) => (
+                <Select {...field}>
+                  <SelectTrigger className="w-[90%] mx-auto">
+                    <SelectValue placeholder="Select an event" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value={CareerEvent.HIRED}>Hired</SelectItem>
+                      <SelectItem value={CareerEvent.PROMOTED}>
+                        Promoted
+                      </SelectItem>
+                      <SelectItem value={CareerEvent.FIREWELL}>
+                        Farewell
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.careerEvent && <span>{errors.careerEvent.message}</span>}
+          </div>
+
+          <Button type="submit" disabled={isSubmitPending}>
+            Submit
+          </Button>
+        </form>
       </div>
     </main>
   );
