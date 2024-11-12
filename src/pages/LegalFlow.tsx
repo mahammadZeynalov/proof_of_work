@@ -52,17 +52,23 @@ export function LegalFlow() {
     const fetchJobs = async () => {
       const result: JobItem[] = [];
       setIsNftsLoading(true);
-      for (let i = 0; i <= Number(nftsIds); i++) {
-        const jobData = (await readContract(rainbowkitConfig, {
-          abi: ABI,
-          address: CONTRACT_ADDRESS,
-          functionName: "getJobData",
-          args: [i],
-        })) as JobItem;
-        result.push(jobData);
+      try {
+        for (let i = 0; i <= Number(nftsIds); i++) {
+          console.log("i: ", i);
+          const jobData = (await readContract(rainbowkitConfig, {
+            abi: ABI,
+            address: CONTRACT_ADDRESS,
+            functionName: "JobData",
+            args: [i],
+          })) as JobItem;
+          result.push(jobData);
+        }
+        setNfts(result);
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setIsNftsLoading(false);
       }
-      setIsNftsLoading(false);
-      setNfts(result);
     };
     fetchJobs();
   }, [nftsIds]);
@@ -76,7 +82,7 @@ export function LegalFlow() {
         abi: ABI,
         address: CONTRACT_ADDRESS,
         functionName: "mintNFT",
-        args: [searchValue, jobText, parseInt(jobCareerEvent)],
+        args: [candidateWalletAddress, jobText, parseInt(jobCareerEvent)],
       });
       console.log("txHash: ", txHash);
 
@@ -86,7 +92,6 @@ export function LegalFlow() {
       });
       toast({
         title: "Successfully added new job entry",
-        description: "Refresh the page to see changes",
       });
     } catch (e) {
       toast({
@@ -106,6 +111,8 @@ export function LegalFlow() {
 
   const [jobText, setJobText] = useState("");
   const [jobCareerEvent, setJobCareerEvent] = useState<string>("0");
+  const [candidateWalletAddress, setCandidateWalletAddress] =
+    useState<string>("");
 
   return (
     <Tabs
@@ -165,6 +172,18 @@ export function LegalFlow() {
         <div style={{ width: 600 }}>Add new career information:</div>
         <div className="mt-4">
           <div>
+            <label htmlFor="text">Candidate wallet address:</label>
+            <Input
+              id="text"
+              type="text"
+              value={candidateWalletAddress}
+              className="mt-2"
+              onChange={(event) =>
+                setCandidateWalletAddress(event.target.value)
+              }
+            />
+          </div>
+          <div className="mt-4">
             <label htmlFor="text">Description:</label>
             <Input
               id="text"
