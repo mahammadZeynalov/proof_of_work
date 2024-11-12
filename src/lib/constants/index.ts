@@ -550,7 +550,7 @@ export const ABI = [
     type: "function",
   },
 ] as any;
-export const CONTRACT_ADDRESS = "0xFD8C6532CCa723423992A46bf785Ccbf1f01e047";
+export const CONTRACT_ADDRESS = "0x6df8d97a2dAc7484cEeEaBe519753B04951372b4";
 export const LEGAL_WALLETS = [
   "0xfE3B28ed2F6F67BbBA957e4af61b5B0eE65d0831",
   "0x583031D1113aD414F02576BD6afaBfb302140225",
