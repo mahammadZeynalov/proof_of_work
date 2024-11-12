@@ -124,6 +124,15 @@ export function LegalFlow() {
         careerEvent: CareerEvent.HIRED,
         timestamp: 1731389125000,
       });
+      setNfts((prev) => [
+        ...prev,
+        {
+          tokenId: "3",
+          text: "Get a job at RootStock",
+          careerEvent: CareerEvent.HIRED,
+          timestamp: 1731389125000,
+        },
+      ]);
     } catch (e) {
       toast({
         title: "Error",
