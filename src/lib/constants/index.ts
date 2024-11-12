@@ -1,3 +1,5 @@
+import { CareerEvent, JobItem } from "../types";
+
 export const ERC20_ADDRESS = "0x72df7a1734dd6cea1682f2b93634c7f7007ad511";
 export const ERC721_ADDRESS = "0x65C955e31f8bd0964127a0A2F4bC84AB298c71BE";
 export const ERC1155_ADDRESS = "0xB522148B5587625610AeB9600A1716DAe2bB6DE9";
@@ -589,4 +591,19 @@ export const LEGAL_WALLETS = [
   "0xfE3B28ed2F6F67BbBA957e4af61b5B0eE65d0831",
   "0x583031D1113aD414F02576BD6afaBfb302140225",
   "0xdD870fA1b7C4700F2BD7f44238821C26f7392148",
+];
+
+export const JOB_ITEMS: JobItem[] = [
+  {
+    tokenId: "1",
+    text: "TEXT 1",
+    careerEvent: CareerEvent.HIRED,
+    timestamp: 1731389125000,
+  },
+  {
+    tokenId: "2",
+    text: "TEXT 2",
+    careerEvent: CareerEvent.PROMOTED,
+    timestamp: 1731389125000,
+  },
 ];
