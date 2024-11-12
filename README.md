@@ -21,7 +21,7 @@ Jobseekers sometimes falsify information on their CVs to appear more experienced
 
 ### Contract Address for Workplace Management on Rootstock Testnet
 
-This contract handles transactions related to adding workplaces from enterprises for individuals and confirming user participation.
+This contract handles transactions related to Candidate Flow (candidate confirm to share this information with enterprises) and Enterpise Flow (authorized enterpises can check candidates work history and add modify employee data).
 
 - **Contract Address**: [`0x6df8d97a2dac7484ceeeabe519753b04951372b4`](https://explorer.testnet.rootstock.io/address/0x6df8d97a2dac7484ceeeabe519753b04951372b4)
 - **Network**: Rootstock Testnet
