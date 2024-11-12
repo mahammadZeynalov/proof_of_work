@@ -2,7 +2,7 @@ import Button from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { rainbowkitConfig } from "@/config/rainbowkitConfig";
 import { ABI, CONTRACT_ADDRESS } from "@/lib/constants";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { waitForTransactionReceipt } from "wagmi/actions";
 
@@ -29,10 +29,12 @@ export function IndividualFlow() {
     }
   }, [address]);
 
-  const { writeContractAsync, isPending: isSubmitPending } = useWriteContract();
+  const { writeContractAsync } = useWriteContract();
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
   const handleSubmit = async () => {
     try {
+      setIsSubmitLoading(true);
       const txHash = await writeContractAsync({
         abi: ABI,
         address: CONTRACT_ADDRESS,
@@ -45,9 +47,10 @@ export function IndividualFlow() {
         hash: txHash,
       });
       console.log("res: ", res);
+
       toast({
-        title: "Successfully registered",
-        description: "",
+        title: "Candidate successfully registered!",
+        variant: "default",
       });
 
       refetch();
@@ -58,22 +61,24 @@ export function IndividualFlow() {
         variant: "destructive",
       });
       console.error(e);
+    } finally {
+      setIsSubmitLoading(false);
     }
   };
 
   return (
-    <main className="max-w-[1100px] mx-auto">
+    <main className="max-w-[1100px] mx-auto mt-8">
       {isAlreadyAgreedLoading ? (
-        <div>Loading status...</div>
+        <div>Loading user status...</div>
       ) : isAlreadyAgreed ? (
-        <div>You have been already agreed to provide work history</div>
+        <div>You've already agreed to share your work history.</div>
       ) : (
         <Button
           onClick={handleSubmit}
-          disabled={isSubmitPending || isAlreadyAgreedLoading}
+          disabled={isSubmitLoading || isAlreadyAgreedLoading}
         >
-          With clicking this button you agree to provide your work experience
-          data to HRs
+          By clicking this button, you agree to provide your work experience
+          data to HR professionals.
         </Button>
       )}
     </main>
