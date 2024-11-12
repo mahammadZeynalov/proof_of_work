@@ -23,14 +23,17 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Loader from "@/components/ui/loader";
 
 export function LegalFlow() {
   const [searchValue, setSearchValue] = useState("");
   const [nfts, setNfts] = useState<JobItem[]>([]);
+  const [isNftsLoading, setIsNftsLoading] = useState(false);
   const { writeContractAsync, isPending: isSubmitPending } = useWriteContract();
+  const [isMintLoading, setIsMintLoading] = useState(false);
   const {
     data: nftsIds,
-    isLoading: isNftsIdsLoading,
+    isFetching: isNftsIdsLoading,
     refetch: refetchNftsIds,
   } = useReadContract({
     abi: ABI,
@@ -48,6 +51,7 @@ export function LegalFlow() {
     if (!Number(nftsIds)) return;
     const fetchJobs = async () => {
       const result: JobItem[] = [];
+      setIsNftsLoading(true);
       for (let i = 0; i <= Number(nftsIds); i++) {
         const jobData = (await readContract(rainbowkitConfig, {
           abi: ABI,
@@ -57,6 +61,7 @@ export function LegalFlow() {
         })) as JobItem;
         result.push(jobData);
       }
+      setIsNftsLoading(false);
       setNfts(result);
     };
     fetchJobs();
@@ -66,6 +71,7 @@ export function LegalFlow() {
     console.log(jobCareerEvent);
     console.log(jobText);
     try {
+      setIsMintLoading(true);
       const txHash = await writeContractAsync({
         abi: ABI,
         address: CONTRACT_ADDRESS,
@@ -89,6 +95,8 @@ export function LegalFlow() {
         variant: "destructive",
       });
       console.error(e);
+    } finally {
+      setIsMintLoading(false);
     }
   };
 
@@ -129,7 +137,7 @@ export function LegalFlow() {
                 onChange={(event) => setSearchValue(event.target.value)}
               />
               <Button onClick={handleSearch} disabled={isNftsIdsLoading}>
-                Search
+                {isNftsIdsLoading || isNftsLoading ? <Loader /> : "Search"}
               </Button>
             </div>
           </div>
@@ -193,7 +201,7 @@ export function LegalFlow() {
             onClick={mintJob}
             className="mt-4"
           >
-            Submit
+            {isSubmitPending || isMintLoading ? <Loader /> : "Submit"}
           </Button>
         </div>
       </TabsContent>

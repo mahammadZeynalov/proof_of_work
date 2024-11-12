@@ -72,6 +72,8 @@ export function IndividualFlow() {
         <div>Loading user status...</div>
       ) : isAlreadyAgreed ? (
         <div>You've already agreed to share your work history.</div>
+      ) : isSubmitLoading || isAlreadyAgreedLoading ? (
+        <div>Submitting user information...</div>
       ) : (
         <Button
           onClick={handleSubmit}
