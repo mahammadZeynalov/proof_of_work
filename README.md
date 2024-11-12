@@ -17,6 +17,17 @@ Proof of Work is a decentralized platform that allows jobseekers to securely sha
 
 # ProofOfWork Smart Contract
 
+### Contract Address for Workplace Management on Rootstock Testnet
+
+This contract handles transactions related to adding workplaces from enterprises for individuals and confirming user participation.
+
+- **Contract Address**: [`0x6df8d97a2dac7484ceeeabe519753b04951372b4`](https://explorer.testnet.rootstock.io/address/0x6df8d97a2dac7484ceeeabe519753b04951372b4)
+- **Network**: Rootstock Testnet
+
+This contract facilitates the following:
+- Enterprises can add workplaces for individuals.
+- Users can confirm their association with the added workplaces.
+
 ## Overview
 
 The `ProofOfWork` smart contract is an ERC-721 compliant NFT contract designed for managing employment status through blockchain-based tokens. The contract allows only approved minters to mint tokens representing various career events for registered users. Each token contains a unique status with details such as event type and timestamp.
