@@ -4,7 +4,7 @@ import { ABI, CONTRACT_ADDRESS } from "@/lib/constants";
 import { useEffect, useState } from "react";
 import { useReadContract, useWriteContract } from "wagmi";
 import { readContract, waitForTransactionReceipt } from "@wagmi/core";
-import { JobItem } from "@/lib/types";
+import { CareerEvent, JobItem } from "@/lib/types";
 import { rainbowkitConfig } from "@/config/rainbowkitConfig";
 import {
   Card,
@@ -24,6 +24,9 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Loader from "@/components/ui/loader";
+import newHireImg from "../assets/new_hire.jpeg";
+import promotionImg from "../assets/promotionImg.jpeg";
+import firedImg from "../assets/firedImg.jpeg";
 
 export function LegalFlow() {
   const [searchValue, setSearchValue] = useState("");
@@ -44,8 +47,6 @@ export function LegalFlow() {
       enabled: false,
     },
   });
-  console.log("searchValue: ", searchValue);
-  console.log("nftIds: ", nftsIds);
 
   useEffect(() => {
     if (!Number(nftsIds)) return;
@@ -61,7 +62,7 @@ export function LegalFlow() {
             functionName: "JobData",
             args: [i],
           })) as JobItem;
-          result.push(jobData);
+          result.push({ ...jobData, source: mapNftImage(jobData.careerEvent) });
         }
         setNfts(result);
       } catch (e) {
@@ -73,9 +74,17 @@ export function LegalFlow() {
     fetchJobs();
   }, [nftsIds]);
 
+  const mapNftImage = (careerEvent: CareerEvent) => {
+    if (careerEvent === CareerEvent.HIRED) {
+      return newHireImg;
+    } else if (careerEvent === CareerEvent.PROMOTED) {
+      return promotionImg;
+    } else {
+      return firedImg;
+    }
+  };
+
   const mintJob = async () => {
-    console.log(jobCareerEvent);
-    console.log(jobText);
     try {
       setIsMintLoading(true);
       const txHash = await writeContractAsync({
