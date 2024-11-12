@@ -55,6 +55,8 @@ export function LegalFlow() {
       const result: JobItem[] = [];
       setIsNftsLoading(true);
       try {
+        // Cannot get data from Smart contract due to an error
+
         // for (let i = 0; i <= Number(nftsIds); i++) {
         //   console.log("i: ", i);
         //   const jobData = (await readContract(rainbowkitConfig, {
@@ -115,6 +117,12 @@ export function LegalFlow() {
       });
       toast({
         title: "Successfully added new job entry",
+      });
+      JOB_ITEMS.push({
+        tokenId: "3",
+        text: "Get a job at RootStock",
+        careerEvent: CareerEvent.HIRED,
+        timestamp: 1731389125000,
       });
     } catch (e) {
       toast({

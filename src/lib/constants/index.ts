@@ -596,13 +596,13 @@ export const LEGAL_WALLETS = [
 export const JOB_ITEMS: JobItem[] = [
   {
     tokenId: "1",
-    text: "TEXT 1",
+    text: "Welcome to Microsoft!",
     careerEvent: CareerEvent.HIRED,
     timestamp: 1731389125000,
   },
   {
     tokenId: "2",
-    text: "TEXT 2",
+    text: "Promoted to Senior Solidy Developer!",
     careerEvent: CareerEvent.PROMOTED,
     timestamp: 1731389125000,
   },
