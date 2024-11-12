@@ -1,62 +1,14 @@
-<img src="rootstock-logo.jpg" alt="RSK Logo" style="width:100%; height: auto;" />
+This project has been created using Rootstock Wagmi Starter Kit:
 
-## Rootstock Wagmi & Shadcn Starter Kit
+https://dev.rootstock.io/developers/quickstart/wagmi/
 
-This starter kit provides a foundation for building decentralized applications (dApps) on the Rootstock blockchain using [React](https://react.dev/learn), [Wagmi](https://wagmi.sh/) and [Shadcn](https://ui.shadcn.com/) libraries. It includes features such as:
+Tech Stack
+Frontend: React
+Blockchain: Solidity smart contract
+Sponsor integration: Rootstock (https://dev.rootstock.io/)
 
-- Integration with [Rainbowkit](https://www.rainbowkit.com/) for wallet connection and interacting with smart contracts
-- Sample integrations of interactions with tokens like ERC20, ERC721, and ERC1155.
-- Prettier and eslint configured for project files.
-- Tailwindcss and Shadcn configured for style customization.
+Problem:
 
-Check the live demo here: https://rsk-wagmi-starter-kit.vercel.app/
+Jobseekers can sometimes falsify information on their CVs to appear more experienced than they actually are, leading recruiters to make hiring decisions based on inaccurate or exaggerated work histories. This practice not only undermines trust in the hiring process but also poses risks to companies that rely on genuine expertise. To address this, there is a need for a global platform where recruiters can access verified, blockchain-based data on jobseekers’ work experiences. By providing an immutable and transparent record of employment history, such a platform ensures that recruiters have access to trustworthy information, ultimately creating a fairer and more reliable hiring process.
 
-## Project Structure
-
-```text
-.
-├── public
-├── src
-│   ├── App.tsx
-│   ├── assets
-│   ├── components
-│   ├── config
-│   │   ├── providers.tsx
-│   │   ├── rainbowkitConfig.ts
-│   │   └── wagmiProviderConfig.ts
-│   ├── lib
-│   │   └── utils
-│   ├── main.tsx
-│   ├── pages
-├── package.json
-```
-
-## Supported Networks
-
-- Rootstock Mainnet
-- Rootstock Testnet
-
-## Usage
-
-### Setup
-
-#### 1. Clone Repository
-
-```shell
-git clone https://github.com/chrisarevalodev/rsk-wagmi-starter-kit.git
-cd rsk-wagmi-starter-kit
-```
-
-#### 2. Install Dependencies
-
-> **Note**: We recommend using yarn package manager given that there are some conflicts when installing some packages with npm.
-
-```shell
-yarn
-```
-
-#### 3. Run Project
-
-```shell
-yarn dev
-```
+Proof of Work is a decentralized platform that allows jobseekers to securely share verified work history with recruiters, using blockchain technology. This project addresses the common issue of falsified experience by enabling only authorized companies to update and verify jobseekers' employment records. Recruiters gain access to trustworthy, tamper-proof work history, fostering a more transparent hiring process.
