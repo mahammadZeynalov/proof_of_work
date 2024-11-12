@@ -130,7 +130,8 @@ export function LegalFlow() {
           tokenId: "3",
           text: "Get a job at RootStock",
           careerEvent: CareerEvent.HIRED,
-          timestamp: 1731389125000,
+          timestamp: 1731389126000,
+          source: mapNftImage(CareerEvent.HIRED),
         },
       ]);
     } catch (e) {
@@ -194,6 +195,8 @@ export function LegalFlow() {
               width: 700,
               display: "flex",
               justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 20,
             }}
           >
             {nfts.map((nft) => (
