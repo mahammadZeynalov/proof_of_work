@@ -1,37 +1,25 @@
-import { ABI, ERC20_ADDRESS } from "@/lib/constants";
+import { LEGAL_WALLETS } from "@/lib/constants";
 import { UserType } from "@/lib/types";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAccount, useReadContract } from "wagmi";
+import { useAccount } from "wagmi";
 
 export function Home() {
   const { address } = useAccount();
   const navigate = useNavigate();
-  const { data, isLoading, refetch, isSuccess } = useReadContract({
-    abi: ABI,
-    address: ERC20_ADDRESS,
-    functionName: "checkUserType",
-    args: [ERC20_ADDRESS],
-    query: {
-      enabled: false,
-    },
-  });
 
   useEffect(() => {
-    refetch();
-  }, [address]);
-
-  useEffect(() => {
-    if (data && isSuccess) {
-      // get user type from data response of smart contract
-      const userType = UserType.INDIVIDUAL;
-      navigate(`/${userType}`);
+    if (address) {
+      const userType = LEGAL_WALLETS.some((i) => i === address)
+        ? UserType.LEGAL
+        : UserType.INDIVIDUAL;
+      navigate(`/${userType.toLocaleLowerCase()}`);
     }
-  }, [data, isSuccess]);
+  }, [address]);
 
   return (
     <main className="max-w-[1100px] mx-auto">
-      {!address ? <div>Login first</div> : isLoading && <div>Loading...</div>}
+      <div>Job history platform. Connect Wallet pls</div>
     </main>
   );
 }

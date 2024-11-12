@@ -10,15 +10,15 @@ export enum UserType {
 }
 
 export enum CareerEvent {
-  HIRED = "HIRED",
-  PROMOTED = "PROMOTED",
-  FIREWELL = "FIREWELL",
+  HIRED,
+  PROMOTED,
+  TERMINATED,
 }
 
 export interface JobItem {
-  id: string;
-  source?: string;
+  tokenId: string;
   text: string;
   careerEvent: CareerEvent;
   timestamp: number;
+  source?: string;
 }

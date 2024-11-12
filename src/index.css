@@ -89,3 +89,8 @@
     transform: translate(calc(-50% - 1.5rem));
   }
 }
+
+.select-override > button {
+  margin-left: 0;
+  width: 100% !important;
+}

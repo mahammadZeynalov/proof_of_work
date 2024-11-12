@@ -1,10 +1,10 @@
 import Button from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ABI, CONTRACT_ADDRESS, ERC20_ADDRESS } from "@/lib/constants";
+import { ABI, CONTRACT_ADDRESS } from "@/lib/constants";
 import { useEffect, useState } from "react";
 import { useReadContract, useWriteContract } from "wagmi";
 import { readContract, waitForTransactionReceipt } from "@wagmi/core";
-import { CareerEvent, JobItem } from "@/lib/types";
+import { JobItem } from "@/lib/types";
 import { rainbowkitConfig } from "@/config/rainbowkitConfig";
 import {
   Card,
@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function LegalFlow() {
   const [searchValue, setSearchValue] = useState("");
@@ -40,18 +41,19 @@ export function LegalFlow() {
       enabled: false,
     },
   });
+  console.log("searchValue: ", searchValue);
+  console.log("nftIds: ", nftsIds);
 
   useEffect(() => {
-    if (!(nftsIds as string[])?.length) return;
-    const tokenIds = nftsIds as string[];
+    if (!Number(nftsIds)) return;
     const fetchJobs = async () => {
       const result: JobItem[] = [];
-      for (const tokenId of tokenIds) {
+      for (let i = 0; i <= Number(nftsIds); i++) {
         const jobData = (await readContract(rainbowkitConfig, {
           abi: ABI,
           address: CONTRACT_ADDRESS,
           functionName: "getJobData",
-          args: [tokenId],
+          args: [i],
         })) as JobItem;
         result.push(jobData);
       }
@@ -61,13 +63,16 @@ export function LegalFlow() {
   }, [nftsIds]);
 
   const mintJob = async () => {
+    console.log(jobCareerEvent);
+    console.log(jobText);
     try {
       const txHash = await writeContractAsync({
         abi: ABI,
-        address: ERC20_ADDRESS,
+        address: CONTRACT_ADDRESS,
         functionName: "mintNFT",
-        args: [searchValue, jobText, jobCareerEvent],
+        args: [searchValue, jobText, parseInt(jobCareerEvent)],
       });
+      console.log("txHash: ", txHash);
 
       await waitForTransactionReceipt(rainbowkitConfig, {
         confirmations: 1,
@@ -92,80 +97,106 @@ export function LegalFlow() {
   };
 
   const [jobText, setJobText] = useState("");
-  const [jobCareerEvent, setJobCareerEvent] = useState<CareerEvent>(
-    CareerEvent.HIRED
-  );
+  const [jobCareerEvent, setJobCareerEvent] = useState<string>("0");
 
   return (
-    <main className="max-w-[1100px] mx-auto">
-      <div>
-        <h2>Search candidate:</h2>
-      </div>
-      <div>
-        <div></div>
-        <div className="mt-6">
-          <Input
-            style={{ width: 500 }}
-            value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value)}
-          />
-          <Button onClick={handleSearch} disabled={isNftsIdsLoading}>
-            Search
+    <Tabs
+      defaultValue="SEARCH"
+      className="flex flex-col items-center mt-8"
+      id="tabs"
+    >
+      <TabsList>
+        <TabsTrigger value="SEARCH">Search</TabsTrigger>
+        <TabsTrigger value="WORK">Add work experience</TabsTrigger>
+      </TabsList>
+      <TabsContent value="SEARCH" className="mt-8">
+        <section>
+          <div>
+            <h2>Search candidate:</h2>
+          </div>
+          <div>
+            <div
+              className="mt-6"
+              style={{
+                width: 600,
+                display: "flex",
+                gap: 30,
+                alignItems: "center",
+              }}
+            >
+              <Input
+                value={searchValue}
+                onChange={(event) => setSearchValue(event.target.value)}
+              />
+              <Button onClick={handleSearch} disabled={isNftsIdsLoading}>
+                Search
+              </Button>
+            </div>
+          </div>
+          <div>
+            {nfts.map((nft) => (
+              <Card className="w-full max-w-md mx-auto">
+                <CardHeader className="space-y-2">
+                  <CardTitle className="text-2xl font-bold">
+                    {nft.careerEvent}
+                  </CardTitle>
+                  <CardDescription className="text-gray-500 dark:text-gray-400">
+                    {nft.text}
+                  </CardDescription>
+                  <CardDescription className="text-gray-500 dark:text-gray-400">
+                    {nft.timestamp}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4"></CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      </TabsContent>
+      <TabsContent value="WORK" className="mt-8">
+        <div style={{ width: 600 }}>Add new career information:</div>
+        <div className="mt-4">
+          <div>
+            <label htmlFor="text">Description:</label>
+            <Input
+              id="text"
+              type="text"
+              value={jobText}
+              className="mt-2"
+              onChange={(event) => setJobText(event.target.value)}
+            />
+          </div>
+
+          <div className="mt-4">
+            <label htmlFor="careerEvent">Career Event:</label>
+            <div className="mt-2 select-override">
+              <Select
+                onValueChange={(value: string) => setJobCareerEvent(value)}
+              >
+                <SelectTrigger className="w-[90%] mx-auto">
+                  <SelectValue placeholder="Select an event" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value={"0"}>Hired</SelectItem>
+                    <SelectItem value={"1"}>Promoted</SelectItem>
+                    <SelectItem value={"2"}>Farewell</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <Button
+            type="button"
+            disabled={isSubmitPending}
+            onClick={mintJob}
+            className="mt-4"
+          >
+            Submit
           </Button>
         </div>
-      </div>
-      <div>
-        {nfts.map((nft) => (
-          <Card className="w-full max-w-md mx-auto">
-            <CardHeader className="space-y-2">
-              <CardTitle className="text-2xl font-bold">
-                {nft.careerEvent}
-              </CardTitle>
-              <CardDescription className="text-gray-500 dark:text-gray-400">
-                {nft.text}
-              </CardDescription>
-              <CardDescription className="text-gray-500 dark:text-gray-400">
-                {nft.timestamp}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4"></CardContent>
-          </Card>
-        ))}
-      </div>
-      <div>Add career information:</div>
-      <div>
-        <div>
-          <label htmlFor="text">Job Event Description</label>
-          <Input
-            id="text"
-            type="text"
-            value={jobText}
-            onChange={(event) => setJobText(event.target.value)}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="careerEvent">Career Event</label>
-          <Select
-            onValueChange={(value: CareerEvent) => setJobCareerEvent(value)}
-          >
-            <SelectTrigger className="w-[90%] mx-auto">
-              <SelectValue placeholder="Select an event" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value={CareerEvent.HIRED}>Hired</SelectItem>
-                <SelectItem value={CareerEvent.PROMOTED}>Promoted</SelectItem>
-                <SelectItem value={CareerEvent.FIREWELL}>Farewell</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button type="button" disabled={isSubmitPending} onClick={mintJob}>
-          Submit
-        </Button>
-      </div>
-    </main>
+      </TabsContent>
+    </Tabs>
   );
 }
